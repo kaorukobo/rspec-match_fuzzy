@@ -1,5 +1,17 @@
 require 'rspec'
 
+module RSpec
+  module MatchFuzzy
+    DIFF_LABEL =
+      if defined? RSpec::Matchers::ExpectedsForMultipleDiffs
+        RSpec::Matchers::ExpectedsForMultipleDiffs::DEFAULT_DIFF_LABEL
+      else
+        # as of rspec-expectations v3.13.0
+        RSpec::Matchers::MultiMatcherDiff::DEFAULT_DIFF_LABEL
+      end
+  end
+end
+
 RSpec::Matchers.define :match_fuzzy do |expected|
   expected = expected.to_s
 
@@ -21,8 +33,7 @@ expected: #{expected_normalized.inspect}
     diff = RSpec::Expectations.differ.diff(actual_normalized, expected_normalized)
 
     unless diff.strip.empty?
-      diff_label = RSpec::Matchers::ExpectedsForMultipleDiffs::DEFAULT_DIFF_LABEL
-      message << "\n\n" << diff_label << diff
+      message << "\n\n" << RSpec::MatchFuzzy::DIFF_LABEL << diff
     end
 
     message

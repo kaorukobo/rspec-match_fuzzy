@@ -57,4 +57,19 @@ describe 'match_fuzzy' do
       expect(expected.strip).to match_fuzzy expected
     end
   end
+
+  context "when expectation fails (due to extra char)" do
+    it "shows diff" do
+      expect {
+        expect(<<-EOS).to match_fuzzy expected
+          London Bridge
+          Is Broken down,
+          xDance over my Lady Lee.
+          London Bridge
+          Is Broken down
+          With a gay Lady.
+        EOS
+      }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /-Dance.*\+xDance/m)
+    end
+  end
 end
